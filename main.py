@@ -12,6 +12,19 @@ _USERS = {"1": "Vasya", "2": "Petya"}
 _IDS = {val: id for id, val in _USERS.items()}
 
 
+class XFMMiddleware:
+
+    def __init__(self, app, real_ip="10.1.1.1"):
+        self.app = app
+        self.real_ip = real_ip
+
+    def __call__(self, environ, start_response):
+        if "HTTP_X_FORWARDED_FOR" not in environ:
+            values = "%s, 10.3.4.5, 127.0.0.1" % self.real_ip
+            environ["HTTP_X_FORWARDED_FOR"] = values
+        return self.app(environ, start_response)
+
+
 class RegisteredUser(BaseConverter):
 
     def to_python(self, value):
@@ -32,6 +45,7 @@ def yamlify(data, status=200, headers=None):
 
 app = Flask(__name__)
 app.url_map.converters["registered"] = RegisteredUser
+app.wsgi_app = XFMMiddleware(app.wsgi_app)
 
 
 def finished(sender, response, **extra):
@@ -61,10 +75,18 @@ def auth():
 
 @app.route("/api", methods=["POST", "DELETE", "GET"])
 def my_microservice():
+    if "X-Forwarded-For" in request.headers:
+        ips = [
+            ip.strip() for ip in
+            request.headers["X-Forwarded-For"].split(",")
+        ]
+        ip = ips[0]
+    else:
+        ip = request.remote_addr
     print(request)
     print(request.environ)
     # response = yamlify(["Hello", "YAML", "World!"])
-    response = jsonify({"Hello": g.user})
+    response = jsonify({"Hello": g.user, "IP": ip})
     return response
 
 
