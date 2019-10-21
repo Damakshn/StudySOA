@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request, g, request_finished
 from flask.signals import signals_available
 from werkzeug.routing import BaseConverter, ValidationError
 import yaml
+from konfig import Config
+from employees import teams
 
 
 if not signals_available:
@@ -43,9 +45,12 @@ def yamlify(data, status=200, headers=None):
     return yaml.safe_dump(data), status, _headers
 
 
+conf = Config("settings.ini")
 app = Flask(__name__)
+app.config.update(conf.get_map("flask"))
 app.url_map.converters["registered"] = RegisteredUser
 app.wsgi_app = XFMMiddleware(app.wsgi_app)
+app.register_blueprint(teams)
 
 
 def finished(sender, response, **extra):
@@ -62,6 +67,11 @@ def authenticate():
         g.user = request.authorization["username"]
     else:
         g.user = "Anonymous"
+
+
+@app.errorhandler(500)
+def error_handling(error):
+    return jsonify({"Error": str(error)}, 500)
 
 
 @app.route("/")
@@ -97,4 +107,4 @@ def person(name):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=(app.config["DEBUG"] == 1))
