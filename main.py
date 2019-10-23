@@ -71,7 +71,7 @@ def authenticate():
 
 @app.errorhandler(500)
 def error_handling(error):
-    return jsonify({"Error": str(error)}, 500)
+    return jsonify({"Error": str(error), "code": 500}, 500)
 
 
 @app.route("/")
@@ -83,7 +83,7 @@ def auth():
     return ""
 
 
-@app.route("/api", methods=["POST", "DELETE", "GET"])
+@app.route("/api", methods=["POST", "GET"])
 def my_microservice():
     if "X-Forwarded-For" in request.headers:
         ips = [

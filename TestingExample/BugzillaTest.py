@@ -20,7 +20,7 @@ class TestBugzilla(unittest.TestCase):
         zilla = MyBugzilla("someone@mozilla.com", server="http://example.com")
         bugs = list(zilla.get_new_bugs())
         self.assertEqual(
-            bugs[0]["link"], 
+            bugs[0]["link"],
             "http://example.com/show_bug.cgi?id=12345"
         )
 
