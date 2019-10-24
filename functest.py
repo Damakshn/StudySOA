@@ -1,6 +1,8 @@
 from main import app as tested_app
 import unittest
 import json
+from webtest import TestApp
+import os
 
 
 _404 = (
@@ -10,7 +12,7 @@ _404 = (
 )
 
 
-class TestApp(unittest.TestCase):
+class TestMyApp(unittest.TestCase):
 
     def setUp(self):
         self.app = tested_app.test_client()
@@ -26,6 +28,29 @@ class TestApp(unittest.TestCase):
     def test_404(self):
         hello = self.app.get("/boo")
         self.assertEqual(hello.status_code, 404)
+
+    def test_help_webtest(self):
+        # by WebTest
+        app = TestApp(tested_app)
+        hello = app.get("/api")
+        self.assertEqual(hello.json["Hello"], "Anonymous")
+
+
+class TestWithWSGIProxy2(unittest.TestCase):
+
+    def setUp(self):
+        http_server = os.environ.get("HTTP_SERVER")
+        if http_server is not None:
+            from webtest import TestApp
+            self.app = TestApp(http_server)
+        else:
+            from main import app
+            from webtest import TestApp
+            self.app = TestApp(app)
+
+    def test_help(self):
+        hello = self.app.get("/api")
+        self.assertEqual(hello.json["Hello"], "Anonymous")
 
 
 if __name__ == "__main__":
