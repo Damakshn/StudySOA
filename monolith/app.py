@@ -25,6 +25,14 @@ def create_user():
     return render_template("create_user.html", form=form)
 
 
+@app.route("/fetch")
+def fetch_runs():
+    from monolith.background import fetch_all_runs
+    res = fetch_all_runs.delay()
+    res.wait()
+    return jsonify(res.result)
+
+
 if __name__ == "__main__":
     db.init_app(app)
     csrf.init_app(app)
