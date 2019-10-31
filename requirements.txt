@@ -9,10 +9,15 @@ certifi==2019.9.11
 chardet==3.0.4
 Click==7.0
 configparser==4.0.2
+dnspython==1.16.0
+eventlet==0.25.1
 flakon==0.2
 Flask==1.1.1
+Flask-Login==0.4.1
+Flask-Principal==0.4.0
 Flask-SQLAlchemy==2.4.1
 Flask-WTF==0.14.2
+greenlet==0.4.15
 idna==2.8
 importlib-metadata==0.23
 itsdangerous==1.1.0
@@ -21,6 +26,7 @@ jsonschema==3.1.1
 kombu==4.6.5
 konfig==1.1
 MarkupSafe==1.1.1
+monotonic==1.5
 more-itertools==7.2.0
 pep8==1.7.1
 pycodestyle==2.5.0
