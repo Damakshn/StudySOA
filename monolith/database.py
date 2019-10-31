@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
-
 import enum
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -19,7 +19,8 @@ class User(db.Model):
     max_hr = db.Column(db.Integer)
     rest_hr = db.Column(db.Integer)
     vo2max = db.Column(db.Numeric(4, 2))
-    is_anonymous = False
+    is_active = db.Column(db.Boolean, default=True)
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __init__(self, *args, **kw):
         super(User, self).__init__(*args, **kw)

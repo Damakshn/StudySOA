@@ -16,3 +16,9 @@ class UserForm(FlaskForm):
 
     display = ["email", "firstname", "lastname", "password", "age",
                "weight", "max_hr", "rest_hr", "vo2max"]
+
+
+class LoginForm(FlaskForm):
+    email = f.StringField('email', validators=[DataRequired()])
+    password = f.PasswordField('password', validators=[DataRequired()])
+    display = ['email', 'password']

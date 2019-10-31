@@ -1,5 +1,6 @@
 from celery import Celery
 
+"""
 app = Celery('tasks', backend='rpc', broker='amqp://')
 
 
@@ -18,3 +19,11 @@ def gen_prime(x):
             for j in xrange(i*i, x+1, i):
                 multiples.append(j)
     return results
+"""
+
+app = Celery("tasks", backend="rpc://", broker="pyamqp://")
+
+
+@app.task
+def add(x, y):
+    return x + y
