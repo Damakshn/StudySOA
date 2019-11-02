@@ -4,6 +4,7 @@ from monolith.database import db, User, Run
 
 celery = Celery(__name__, backend="rpc://", broker="amqp://")
 
+
 _APP = None
 
 
@@ -26,7 +27,7 @@ def fetch_all_runs():
     global _APP
     if _APP is None:
         from monolith.app import app
-        db.init_app(app)
+        # db.init_app(app)
         _APP = app
     else:
         app = _APP
@@ -39,6 +40,8 @@ def fetch_all_runs():
             if user.strava_token is None:
                 continue
             runs_fetched[user.id] = fetch_runs(user)
+
+    return runs_fetched
 
 
 def fetch_runs(user):

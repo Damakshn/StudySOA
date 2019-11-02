@@ -21,7 +21,7 @@ def gen_prime(x):
     return results
 """
 
-app = Celery("tasks", backend="rpc://", broker="pyamqp://")
+app = Celery(__name__, backend="rpc://", broker="pyamqp://")
 
 
 @app.task

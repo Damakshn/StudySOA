@@ -1,15 +1,18 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, jsonify
 from database import db, User
 from forms import UserForm, LoginForm
 from flask_wtf.csrf import CsrfProtect
 from stravalib import Client
 from flask_login import LoginManager, login_user, logout_user, login_required
 import functools
+from konfig import Config
+import os
 
 
 app = Flask(__name__)
-app.config["STRAVA_CLIENT_ID"] = "runnerly-strava-id"
-app.config["STRAVA_CLIENT_SECRET"] = "runnerly-strava-secret"
+print(os.getcwd())
+conf = Config("settings.ini")
+app.config.update(conf.get_map("main"))
 csrf = CsrfProtect()
 
 
@@ -43,7 +46,7 @@ def create_user():
 
 @app.route("/fetch")
 def fetch_runs():
-    from monolith.background import fetch_all_runs
+    from background import fetch_all_runs
     res = fetch_all_runs.delay()
     res.wait()
     return jsonify(res.result)
@@ -101,7 +104,7 @@ def load_user(user_id):
     return user
 
 
-@admin_required
+@app.route("/")
 def index_page():
     return render_template("index.html")
 
@@ -110,4 +113,4 @@ if __name__ == "__main__":
     db.init_app(app)
     csrf.init_app(app)
     db.create_all(app=app)
-    app.run()
+    app.run(debug=(app.config["DEBUG"] == 1))
