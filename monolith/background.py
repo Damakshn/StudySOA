@@ -26,15 +26,15 @@ def activity2run(user, activity):
 def fetch_all_runs():
     global _APP
     if _APP is None:
-        from monolith.app import app
+        from monolith.app import create_app
         # db.init_app(app)
-        _APP = app
-    else:
-        app = _APP
+        _APP = create_app()
+    # else:
+        # app = _APP
 
     runs_fetched = {}
 
-    with app.app_context():
+    with _APP.app_context():
         q = db.session.query(User)
         for user in q:
             if user.strava_token is None:
